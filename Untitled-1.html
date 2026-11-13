@@ -1,0 +1,367 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101827">
+<title>CampusFind — Lost & Found</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+:root{
+ --bg:#f4f6fb;--surface:#fff;--surface-2:#f8fafc;--text:#172033;--muted:#718096;
+ --line:#e6eaf1;--primary:#635bff;--primary-dark:#4d46df;--mint:#18b89a;
+ --orange:#f59e0b;--red:#ef6472;--nav:#101827;--shadow:0 18px 50px rgba(25,35,60,.08);
+ --radius:20px;
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;transition:background .25s,color .25s}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+body.dark{--bg:#0d1422;--surface:#151f30;--surface-2:#1b283b;--text:#edf2ff;--muted:#9ba9bf;--line:#2a3850;--shadow:0 18px 50px rgba(0,0,0,.22)}
+.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}
+.sidebar{background:var(--nav);color:#fff;padding:28px 18px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:12px;padding:0 10px 34px}
+.brand-mark{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#7c74ff,#4b43d4);display:grid;place-items:center;font-size:22px;box-shadow:0 8px 20px #635bff55}
+.brand strong{font:800 20px Manrope,sans-serif;letter-spacing:-.6px}.brand small{display:block;color:#94a3b8;font-size:11px;margin-top:2px}
+.nav-label{font-size:10px;letter-spacing:1.6px;color:#64748b;padding:10px 12px 12px;font-weight:700}
+.nav-btn{border:0;background:transparent;color:#aab5c7;width:100%;padding:13px 14px;border-radius:12px;text-align:left;display:flex;align-items:center;gap:13px;margin:3px 0;font-size:14px;transition:.2s}
+.nav-btn span{font-size:18px;width:22px;text-align:center}.nav-btn:hover,.nav-btn.active{background:#252f43;color:#fff}.nav-btn.active{box-shadow:inset 3px 0 #8b85ff}
+.sidebar-bottom{margin-top:auto}.help-card{background:linear-gradient(145deg,#292d59,#242846);border:1px solid #45466e;padding:17px;border-radius:16px;margin:12px 4px 18px}
+.help-card b{font-size:13px}.help-card p{font-size:11px;color:#b5bad5;line-height:1.5}
+.help-card button{border:0;border-radius:9px;background:#fff;color:#3730a3;padding:9px 12px;font-size:11px;font-weight:700}
+.profile-mini{display:flex;align-items:center;gap:10px;padding:12px 9px;border-top:1px solid #293448}
+.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ffc18d,#ff7d9b);display:grid;place-items:center;color:#432b39;font-weight:800}
+.profile-mini b{font-size:12px}.profile-mini small{display:block;color:#94a3b8;font-size:10px;margin-top:3px}
+main{min-width:0;padding:28px 4.2% 50px;max-width:1600px;width:100%;margin:0 auto}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;gap:16px}
+.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:700}
+h1,h2,h3,p{margin-top:0}h1{font:800 clamp(25px,3vw,34px) Manrope,sans-serif;letter-spacing:-1.2px;margin:7px 0}
+.subheading{color:var(--muted);font-size:13px;margin:0}
+.top-actions{display:flex;align-items:center;gap:10px}
+.icon-btn{width:42px;height:42px;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:13px;font-size:17px}
+.primary-btn,.secondary-btn,.danger-btn{border:0;border-radius:12px;padding:12px 17px;font-weight:700;font-size:13px;transition:.2s}
+.primary-btn{background:var(--primary);color:#fff;box-shadow:0 7px 18px #635bff35}.primary-btn:hover{background:var(--primary-dark);transform:translateY(-1px)}
+.secondary-btn{background:var(--surface-2);border:1px solid var(--line);color:var(--text)}
+.danger-btn{background:#fff0f1;color:#d94d5b}
+.page{display:none;animation:fade .25s ease}.page.active{display:block}@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.hero{background:linear-gradient(115deg,#211c55 0%,#4d46bb 52%,#7770ff 100%);color:#fff;border-radius:26px;padding:36px 38px;position:relative;overflow:hidden;min-height:220px;display:flex;align-items:center;box-shadow:0 20px 45px #5148bd30}
+.hero:before,.hero:after{content:"";position:absolute;border:1px solid #ffffff25;border-radius:50%;width:300px;height:300px;right:7%;top:-175px}
+.hero:after{width:220px;height:220px;right:20%;top:125px}
+.hero-content{position:relative;z-index:1;max-width:560px}.hero .eyebrow{color:#c9c6ff}.hero h1{font-size:clamp(27px,4vw,39px);line-height:1.15;margin:12px 0}.hero p{color:#e0defe;line-height:1.7;font-size:14px;max-width:480px}
+.hero .primary-btn{background:#fff;color:#433bb4;box-shadow:none;margin-top:8px}.hero-art{position:absolute;right:8%;font-size:110px;opacity:.95;filter:drop-shadow(0 15px 15px #17134d55)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin:22px 0}
+.stat,.panel,.feature-card,.item-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.stat{padding:18px 19px;display:flex;align-items:center;gap:13px}.stat-icon{width:43px;height:43px;border-radius:14px;display:grid;place-items:center;font-size:20px}
+.stat strong{display:block;font:800 24px Manrope,sans-serif}.stat small{color:var(--muted);font-size:11px}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:28px 0 15px}.section-head h2{font:800 18px Manrope;margin:0}.text-link{border:0;background:none;color:var(--primary);font-weight:700;font-size:12px}
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.feature-card{padding:21px;transition:.2s}.feature-card:hover,.item-card:hover{transform:translateY(-3px)}
+.feature-icon{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:21px;margin-bottom:14px}
+.feature-card h3{font:700 15px Manrope;margin-bottom:7px}.feature-card p{color:var(--muted);font-size:12px;line-height:1.6;margin:0}
+.panel{padding:22px}.panel h2{font:800 18px Manrope;margin-bottom:5px}.panel-desc{color:var(--muted);font-size:12px;margin-bottom:18px}
+.two-col{display:grid;grid-template-columns:1.3fr .7fr;gap:17px}
+.search-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.search-wrap{position:relative;flex:1;min-width:190px}.search-wrap input{padding-left:38px}
+.search-wrap:before{content:"⌕";position:absolute;left:14px;top:8px;font-size:23px;color:var(--muted)}
+input,select,textarea{width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:12px 13px;color:var(--text);outline:none;font-size:13px;transition:.2s}
+input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px #635bff18}
+textarea{resize:vertical;min-height:90px}label{display:block;font-size:12px;font-weight:700;margin:13px 0 7px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.full{grid-column:1/-1}
+.form-shell{max-width:760px;margin:auto}.form-shell .panel{padding:28px}
+.form-title{display:flex;align-items:center;gap:13px;margin-bottom:20px}.form-title .feature-icon{margin:0}
+.hint{font-size:11px;color:var(--muted);margin-top:5px}.checkline{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted);margin:13px 0}.checkline input{width:auto}
+.items-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:17px}
+.item-card{padding:18px;transition:.2s}.item-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px}
+.pill{padding:5px 9px;border-radius:30px;font-size:10px;font-weight:800}.pill.lost{background:#fff0e5;color:#c66a1a}.pill.found{background:#e4fbf4;color:#098568}
+.item-card h3{font:700 15px Manrope;margin:0 0 7px}.item-card p{font-size:12px;color:var(--muted);line-height:1.5;margin:5px 0}
+.item-meta{border-top:1px solid var(--line);padding-top:10px;margin-top:12px;font-size:11px;color:var(--muted);display:flex;justify-content:space-between;gap:10px}
+.empty{text-align:center;padding:35px 15px;color:var(--muted);font-size:13px}.empty b{display:block;font-size:32px;margin-bottom:10px}
+.auth-wrap{max-width:460px;margin:25px auto}.auth-brand{text-align:center;margin-bottom:20px}.auth-brand .brand-mark{margin:auto}.auth-wrap .panel{padding:28px}
+.auth-wrap h2{text-align:center;font:800 22px Manrope;margin:14px 0 5px}.auth-wrap .panel-desc{text-align:center}
+.inline-link{color:var(--primary);font-weight:700;border:0;background:none}
+.calc{max-width:410px}.calc-display{background:var(--surface-2);border:1px solid var(--line);border-radius:13px;padding:18px;text-align:right;font:700 25px Manrope;min-height:65px;margin:15px 0}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.calc-grid button{padding:15px 5px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);color:var(--text);font-weight:700}.calc-grid button.op{color:var(--primary);background:#635bff12}.calc-grid button.equal{background:var(--primary);color:#fff}
+.toast{position:fixed;top:22px;right:22px;background:#172033;color:#fff;padding:13px 18px;border-radius:12px;box-shadow:var(--shadow);font-size:13px;z-index:20;opacity:0;transform:translateY(-10px);pointer-events:none;transition:.25s}.toast.show{opacity:1;transform:none}
+.chat-launch{position:fixed;right:25px;bottom:25px;width:58px;height:58px;border:0;border-radius:19px;background:linear-gradient(135deg,#7770ff,#4d46df);color:#fff;font-size:24px;box-shadow:0 12px 25px #5148bd55;z-index:8}
+.chat-panel{display:none;position:fixed;right:25px;bottom:95px;width:min(340px,calc(100vw - 35px));height:420px;background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);z-index:9;overflow:hidden}
+.chat-panel.open{display:flex;flex-direction:column}.chat-head{padding:16px;background:#24205e;color:#fff;display:flex;justify-content:space-between;align-items:center}.chat-head small{display:block;color:#c8c5ff;font-size:10px;margin-top:3px}
+.chat-body{padding:14px;flex:1;overflow:auto;font-size:12px}.bubble{padding:10px 12px;border-radius:13px;margin:7px 0;max-width:88%;line-height:1.45}.bot{background:var(--surface-2);border:1px solid var(--line)}.user{background:#635bff;color:#fff;margin-left:auto}
+.chat-input{display:flex;gap:7px;padding:12px;border-top:1px solid var(--line)}.chat-input input{min-width:0}.chat-input button{border:0;background:var(--primary);color:#fff;border-radius:10px;padding:0 13px}
+.mobile-menu{display:none}
+@media(max-width:1050px){.app{grid-template-columns:215px 1fr}.stats{grid-template-columns:repeat(2,1fr)}.hero-art{right:3%;font-size:85px}}
+@media(max-width:760px){.app{display:block}.sidebar{height:auto;position:relative;padding:13px 16px;display:block}.brand{padding:0}.sidebar nav,.sidebar .nav-label,.sidebar-bottom{display:none}.mobile-menu{display:block;position:absolute;right:16px;top:15px}.mobile-nav{display:none;padding-top:12px}.mobile-nav.open{display:block}.mobile-nav .nav-btn{display:inline-flex;width:auto;margin:2px;padding:10px}.mobile-nav .nav-btn span{display:none}main{padding:22px 16px 40px}.topbar{margin-bottom:20px}.top-actions .primary-btn{display:none}.hero{padding:28px 23px;min-height:230px}.hero-art{right:5%;bottom:12px;top:auto;font-size:65px;opacity:.35}.feature-grid{grid-template-columns:1fr}.two-col{grid-template-columns:1fr}.items-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.stats{gap:9px}.stat{padding:13px}.stat strong{font-size:20px}.section-head{margin-top:22px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+ <div class="brand"><div class="brand-mark">⌕</div><div><strong>CampusFind</strong><small>LOST. FOUND. REUNITED.</small></div></div>
+ <div class="nav-label">WORKSPACE</div>
+ <nav id="sideNav">
+  <button class="nav-btn active" data-page="home"><span>⌂</span> Overview</button>
+  <button class="nav-btn" data-page="report"><span>＋</span> Report an item</button>
+  <button class="nav-btn" data-page="browse"><span>▦</span> Browse reports</button>
+  <button class="nav-btn" data-page="dashboard"><span>▤</span> Dashboard</button>
+  <button class="nav-btn" data-page="calculator"><span>▣</span> Quick calculator</button>
+ </nav>
+ <div class="sidebar-bottom">
+  <div class="help-card"><b>Need a hand?</b><p>Our CampusFind assistant can help you find your way around.</p><button onclick="toggleChat(true)">Chat with us ↗</button></div>
+  <div class="profile-mini"><div class="avatar">CF</div><div><b>Campus member</b><small>Student workspace</small></div></div>
+ </div>
+ <button class="mobile-menu icon-btn" onclick="toggleMobileNav()" aria-label="Open menu">☰</button>
+ <div class="mobile-nav" id="mobileNav">
+
+  <button class="nav-btn active" data-page="home">Overview</button><button class="nav-btn" data-page="report">Report</button><button class="nav-btn" data-page="browse">Browse</button><button class="nav-btn" data-page="dashboard">Dashboard</button><button class="nav-btn" data-page="calculator">Calculator</button>
+ </div>
+</aside>
+
+<main>
+ <div class="topbar">
+  <div><div class="eyebrow" id="dateLabel">CAMPUS COMMUNITY</div><h1 id="pageTitle">Good things find their way back.</h1><p class="subheading" id="pageSubtitle">A smarter, kinder way to reunite people with their belongings.</p></div>
+  <div class="top-actions"><button class="icon-btn" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle theme">☼</button><button class="primary-btn" onclick="navigate('report')">＋ Report an item</button></div>
+ </div>
+
+ <section class="page active" id="page-home">
+  <div class="hero"><div class="hero-content"><div class="eyebrow">YOUR CAMPUS, CONNECTED</div><h1>Lost something?<br>Let's bring it back.</h1><p>From misplaced keys to forgotten notebooks, CampusFind makes it easier for our campus community to help each other.</p><button class="primary-btn" onclick="navigate('report')">Create a report&nbsp; →</button></div><div class="hero-art">🎒</div></div>
+  <div class="stats">
+   <div class="stat"><div class="stat-icon" style="background:#fff0e5">🔎</div><div><strong id="lostCount">0</strong><small>Items reported lost</small></div></div>
+   <div class="stat"><div class="stat-icon" style="background:#e4fbf4">🤝</div><div><strong id="foundCount">0</strong><small>Items reported found</small></div></div>
+   <div class="stat"><div class="stat-icon" style="background:#eeedff">📋</div><div><strong id="totalCount">0</strong><small>Total reports</small></div></div>
+   <div class="stat"><div class="stat-icon" style="background:#fff4d9">✨</div><div><strong>24/7</strong><small>Community access</small></div></div>
+  </div>
+  <div class="section-head"><h2>Everything you need, in one place</h2><button class="text-link" onclick="navigate('browse')">Explore reports →</button></div>
+  <div class="feature-grid">
+   <article class="feature-card"><div class="feature-icon" style="background:#fff0e5">🔍</div><h3>Report what you've lost</h3><p>Share a few details so someone who finds your item can help return it.</p></article>
+   <article class="feature-card"><div class="feature-icon" style="background:#e4fbf4">💚</div><h3>Help someone out</h3><p>Post an item you've found and give its owner a way to identify it.</p></article>
+   <article class="feature-card"><div class="feature-icon" style="background:#eeedff">⚡</div><h3>Find it faster</h3><p>Browse reports and search by item name, category or location.</p></article>
+  </div>
+  <div class="section-head"><h2>Recently reported</h2><button class="text-link" onclick="navigate('browse')">View all →</button></div>
+  <div class="items-grid" id="recentItems"></div>
+ </section>
+
+ <section class="page" id="page-report">
+  <div class="form-shell"><div class="panel">
+   <div class="form-title"><div class="feature-icon" style="background:#eeedff">📝</div><div><h2>Make a report</h2><p class="panel-desc" style="margin:4px 0 0">The more details you share, the easier it is to reunite an item.</p></div></div>
+   <form id="reportForm" novalidate>
+    <div class="form-grid">
+     <div><label for="fullName">Your full name *</label><input id="fullName" required pattern="[A-Za-z .'-]{2,}" placeholder="e.g. Alex Kumar"></div>
+     <div><label for="regNo">Register number *</label><input id="regNo" required minlength="3" placeholder="e.g. 24CSE001"></div>
+     <div><label for="email">College email *</label><input id="email" type="email" required placeholder="you@example.com"></div>
+     <div><label for="phone">Phone number *</label><input id="phone" type="tel" required pattern="[0-9]{10}" maxlength="10" placeholder="10-digit mobile number"><div class="hint">Enter exactly 10 digits.</div></div>
+     <div><label for="itemName">Item name *</label><input id="itemName" required minlength="2" placeholder="e.g. Blue water bottle"></div>
+     <div><label for="itemType">Report type *</label><select id="itemType" required><option value="">Choose one</option><option value="Lost">I lost this</option><option value="Found">I found this</option></select></div>
+     <div class="full"><label for="category">Category *</label><select id="category" required><option value="">Select category</option><option>Electronics</option><option>Books & stationery</option><option>Wallets & keys</option><option>Clothing & accessories</option><option>Other</option></select></div>
+     <div class="full"><label for="description">Location and description *</label><textarea id="description" required minlength="8" placeholder="Where did you last see it? Add colour, brand or other identifying details."></textarea></div>
+    </div>
+    <label class="checkline"><input type="checkbox" id="confirmDetails" required> I confirm that the information provided is accurate.</label>
+    <button class="primary-btn" type="submit">Submit report&nbsp; →</button> <button class="secondary-btn" type="reset">Clear form</button>
+   </form>
+  </div></div>
+ </section>
+
+ <section class="page" id="page-browse">
+  <div class="panel">
+   <div class="section-head" style="margin:0 0 16px"><div><h2>Community reports</h2><p class="panel-desc" style="margin:5px 0 0">Search what has been lost or found around campus.</p></div></div>
+   <div class="search-row"><div class="search-wrap"><input id="searchReports" type="search" placeholder="Search item, category or location..."></div><select id="filterType" style="max-width:170px"><option value="All">All reports</option><option value="Lost">Lost items</option><option value="Found">Found items</option></select></div>
+   <div class="items-grid" id="allItems"></div>
+  </div>
+ </section>
+
+ <section class="page" id="page-dashboard">
+  <div class="stats">
+   <div class="stat"><div class="stat-icon" style="background:#fff0e5">🔎</div><div><strong id="dashLost">0</strong><small>Lost reports</small></div></div>
+   <div class="stat"><div class="stat-icon" style="background:#e4fbf4">🤝</div><div><strong id="dashFound">0</strong><small>Found reports</small></div></div>
+   <div class="stat"><div class="stat-icon" style="background:#eeedff">📋</div><div><strong id="dashTotal">0</strong><small>Total reports</small></div></div>
+   <div class="stat"><div class="stat-icon" style="background:#fff4d9">🧮</div><div><strong>Ready</strong><small>Calculator tool</small></div></div>
+  </div>
+  <div class="two-col">
+   <div class="panel"><h2>Latest activity</h2><p class="panel-desc">The newest reports submitted by the campus community.</p><div id="dashItems"></div></div>
+   <div class="panel"><h2>Quick actions</h2><p class="panel-desc">Jump straight into what you need.</p><button class="primary-btn" style="width:100%;margin-bottom:10px" onclick="navigate('report')">＋ Create a report</button><button class="secondary-btn" style="width:100%" onclick="navigate('browse')">Browse all reports</button></div>
+  </div>
+ </section>
+
+ <section class="page" id="page-calculator">
+  <div class="panel calc"><h2>Quick calculator</h2><p class="panel-desc">A handy calculator for quick campus calculations.</p>
+   <div class="calc-display" id="calcDisplay" aria-live="polite">0</div>
+   <div class="calc-grid">
+    <button class="op" data-calc="clear">AC</button><button class="op" data-calc="delete">DEL</button><button class="op" data-calc="%">%</button><button class="op" data-calc="/">÷</button>
+    <button data-calc="7">7</button><button data-calc="8">8</button><button data-calc="9">9</button><button class="op" data-calc="*">×</button>
+    <button data-calc="4">4</button><button data-calc="5">5</button><button data-calc="6">6</button><button class="op" data-calc="-">−</button>
+    <button data-calc="1">1</button><button data-calc="2">2</button><button data-calc="3">3</button><button class="op" data-calc="+">+</button>
+    <button data-calc="0" style="grid-column:span 2">0</button><button data-calc=".">.</button><button class="equal" data-calc="=">=</button>
+   </div>
+  </div>
+ </section>
+
+ <section class="page" id="page-signup">
+  <div class="auth-wrap"><div class="panel"><div class="auth-brand"><div class="brand-mark">⌕</div></div><h2>Create your account</h2><p class="panel-desc">Join your campus community on CampusFind.</p>
+   <form id="signupForm"><label for="signupEmail">Email address</label><input type="email" id="signupEmail" required placeholder="you@example.com"><label for="signupPassword">Password</label><input type="password" id="signupPassword" minlength="6" required placeholder="At least 6 characters"><label class="checkline"><input type="checkbox" id="terms" required> I agree to the Terms and Conditions.</label><button class="primary-btn" style="width:100%">Create account</button></form>
+   <p class="hint" style="text-align:center">Already have an account? <button class="inline-link" onclick="navigate('signin')">Sign in</button></p>
+  </div></div>
+ </section>
+
+ <section class="page" id="page-signin">
+  <div class="auth-wrap"><div class="panel"><div class="auth-brand"><div class="brand-mark">⌕</div></div><h2>Welcome back</h2><p class="panel-desc">Sign in to your CampusFind account.</p>
+   <form id="signinForm"><label for="loginEmail">Email address</label><input type="email" id="loginEmail" required placeholder="you@example.com"><label for="loginPassword">Password</label><input type="password" id="loginPassword" required placeholder="Your password"><label class="checkline"><input type="checkbox" id="showPassword"> Show password</label><button class="primary-btn" style="width:100%">Sign in</button></form>
+   <p class="hint" style="text-align:center">New here? <button class="inline-link" onclick="navigate('signup')">Create an account</button></p>
+  </div></div>
+ </section>
+</main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<button class="chat-launch" onclick="toggleChat()" aria-label="Open CampusFind assistant">✦</button>
+<div class="chat-panel" id="chatPanel">
+ <div class="chat-head"><div><b>CampusFind Assistant</b><small>Here to help you out</small></div><button onclick="toggleChat()" style="background:none;border:0;color:white;font-size:20px">×</button></div>
+ <div class="chat-body" id="chatBody"><div class="bubble bot">Hey there! 👋 I can help you report or search for an item. Try asking “How do I report a lost item?”</div></div>
+ <div class="chat-input"><input id="chatInput" placeholder="Ask me something..." aria-label="Chat message"><button id="chatSend">Send</button></div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const storage = {
+ get(key, fallback){try{const value=localStorage.getItem(key);return value===null?fallback:JSON.parse(value)}catch{return fallback}},
+ set(key,value){try{localStorage.setItem(key,JSON.stringify(value))}catch{showToast('Storage is unavailable in this browser.')}}
+};
+let reports = storage.get('campusfind_reports',[]);
+let calcValue='0', calcPrevious=null, calcOperator=null, calcNew=false;
+
+const titles={
+ home:['Good things find their way back.','A smarter, kinder way to reunite people with their belongings.'],
+ report:['Every return starts here.','Tell the campus community what you lost or found.'],
+ browse:['Let’s find what’s missing.','Explore reports shared by your campus community.'],
+ dashboard:['Your campus at a glance.','A quick overview of the latest lost and found activity.'],
+ calculator:['Quick calculations, made easy.','A simple calculator for everyday campus needs.'],
+ signup:['Join the CampusFind community.','Create an account to get started.'],
+ signin:['Welcome back to CampusFind.','Sign in to continue.']
+};
+function navigate(page){
+ document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+ const target=$('page-'+page); if(!target)return;
+ target.classList.add('active');
+ document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+ $('pageTitle').textContent=titles[page][0];$('pageSubtitle').textContent=titles[page][1];
+ $('mobileNav').classList.remove('open');
+ if(page==='browse')renderReports();
+ if(page==='dashboard')renderDashboard();
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('[data-page]').forEach(btn=>btn.addEventListener('click',()=>navigate(btn.dataset.page)));
+function toggleMobileNav(){$('mobileNav').classList.toggle('open')}
+function showToast(message){const t=$('toast');t.textContent=message;t.classList.add('show');clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>t.classList.remove('show'),2600)}
+function toggleTheme(){
+ document.body.classList.toggle('dark');
+ storage.set('campusfind_theme',document.body.classList.contains('dark')?'dark':'light');
+}
+if(storage.get('campusfind_theme','light')==='dark')document.body.classList.add('dark');
+$('dateLabel').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'}).toUpperCase();
+
+function escapeText(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function itemCard(item){
+ const cls=item.type==='Lost'?'lost':'found';
+ return `<article class="item-card"><div class="item-top"><span class="pill ${cls}">${item.type==='Lost'?'● LOST ITEM':'● FOUND ITEM'}</span><span class="eyebrow">${escapeText(item.category)}</span></div><h3>${escapeText(item.item)}</h3><p>${escapeText(item.description)}</p><div class="item-meta"><span>📍 ${escapeText(item.location||'Campus')}</span><span>${escapeText(item.date||'Recently')}</span></div></article>`;
+}
+function renderStats(){
+ const lost=reports.filter(r=>r.type==='Lost').length,found=reports.filter(r=>r.type==='Found').length,total=reports.length;
+ $('lostCount').textContent=lost;$('foundCount').textContent=found;$('totalCount').textContent=total;
+ $('dashLost').textContent=lost;$('dashFound').textContent=found;$('dashTotal').textContent=total;
+}
+function renderRecent(){
+ const target=$('recentItems');const latest=[...reports].reverse().slice(0,2);
+ target.innerHTML=latest.length?latest.map(itemCard).join(''):'<div class="panel empty" style="grid-column:1/-1"><b>🧭</b>No reports yet. Be the first to help someone find their item!</div>';
+}
+function renderReports(){
+ const q=$('searchReports').value.trim().toLowerCase(),type=$('filterType').value;
+ const filtered=[...reports].reverse().filter(r=>(type==='All'||r.type===type)&&[r.item,r.category,r.description,r.location].some(v=>String(v).toLowerCase().includes(q)));
+ $('allItems').innerHTML=filtered.length?filtered.map(itemCard).join(''):'<div class="panel empty" style="grid-column:1/-1"><b>🔎</b>No matching reports found.<br>Try another search or filter.</div>';
+}
+function renderDashboard(){
+ const latest=[...reports].reverse().slice(0,5);
+ $('dashItems').innerHTML=latest.length?latest.map(itemCard).join(''):'<div class="empty"><b>📭</b>No activity to show yet.</div>';
+ renderStats();
+}
+$('searchReports').addEventListener('input',renderReports);$('filterType').addEventListener('change',renderReports);
+
+$('reportForm').addEventListener('submit',e=>{
+ e.preventDefault();const form=e.currentTarget;
+ if(!form.checkValidity()){form.reportValidity();return}
+ const item={
+  name:$('fullName').value.trim(),regNo:$('regNo').value.trim(),email:$('email').value.trim(),
+  phone:$('phone').value.trim(),item:$('itemName').value.trim(),type:$('itemType').value,
+  category:$('category').value,description:$('description').value.trim(),location:$('description').value.trim(),
+  date:new Date().toLocaleDateString()
+ };
+ reports.push(item);storage.set('campusfind_reports',reports);form.reset();
+ renderStats();renderRecent();renderReports();renderDashboard();showToast('Your report has been submitted successfully!');navigate('dashboard');
+});
+
+$('signupForm').addEventListener('submit',e=>{
+ e.preventDefault();if(!e.currentTarget.reportValidity())return;
+ const account={email:$('signupEmail').value.trim().toLowerCase(),password:$('signupPassword').value};
+ storage.set('campusfind_demo_account',account);e.currentTarget.reset();showToast('Account created! You can now sign in.');navigate('signin');
+});
+$('signinForm').addEventListener('submit',e=>{
+ e.preventDefault();if(!e.currentTarget.reportValidity())return;
+ const account=storage.get('campusfind_demo_account',null);
+ const email=$('loginEmail').value.trim().toLowerCase(),password=$('loginPassword').value;
+ if(account&&account.email===email&&account.password===password){storage.set('campusfind_signed_in',true);showToast('Signed in successfully!');navigate('dashboard')}
+ else showToast('Incorrect email or password. Please try again.');
+});
+$('showPassword').addEventListener('change',()=>{$('loginPassword').type=$('showPassword').checked?'text':'password'});
+
+function toggleChat(force){
+ const panel=$('chatPanel');if(force===true)panel.classList.add('open');else panel.classList.toggle('open');
+ if(panel.classList.contains('open'))$('chatInput').focus();
+}
+function addBubble(text,who){
+ const bubble=document.createElement('div');bubble.className='bubble '+who;bubble.textContent=text;$('chatBody').appendChild(bubble);$('chatBody').scrollTop=$('chatBody').scrollHeight;
+}
+function botReply(message){
+ const m=message.toLowerCase();
+ if(m.includes('lost')||m.includes('report'))return 'To report an item, choose “Report an item” from the menu, fill in the details and submit the form.';
+ if(m.includes('found'))return 'Choose “Report an item”, select “I found this”, add the item details and submit your report. Thanks for helping!';
+ if(m.includes('search')||m.includes('find'))return 'Open “Browse reports” and search by item name, category or location. You can also filter Lost and Found reports.';
+ if(m.includes('account')||m.includes('sign'))return 'Use the Sign Up option to create a demo account, then Sign In with the same email and password.';
+ if(m.includes('hello')||m.includes('hi'))return 'Hello! 👋 Welcome to CampusFind. What are you looking for help with?';
+ if(m.includes('thank'))return 'You’re welcome! Every small act helps our campus community.';
+ return 'I can help with reporting lost or found items, browsing reports, and account sign-in. What would you like to do?';
+}
+function sendChat(){
+ const input=$('chatInput'),message=input.value.trim();if(!message)return;
+ addBubble(message,'user');input.value='';
+ setTimeout(()=>addBubble(botReply(message),'bot'),180);
+}
+$('chatSend').addEventListener('click',sendChat);$('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendChat()});
+
+function updateCalc(){ $('calcDisplay').textContent=calcValue }
+function calcPress(key){
+ if(key==='clear'){calcValue='0';calcPrevious=null;calcOperator=null;calcNew=false;updateCalc();return}
+ if(key==='delete'){calcValue=calcValue.length>1?calcValue.slice(0,-1):'0';updateCalc();return}
+ if(key==='='){
+  if(calcPrevious===null||!calcOperator)return;
+  const a=Number(calcPrevious),b=Number(calcValue);let result;
+  if(calcOperator==='/'&&b===0){showToast('Cannot divide by zero.');return}
+  if(calcOperator==='+')result=a+b;if(calcOperator==='-')result=a-b;if(calcOperator==='*')result=a*b;if(calcOperator==='/')result=a/b;
+  calcValue=String(Number(result.toFixed(8)));calcPrevious=null;calcOperator=null;calcNew=true;updateCalc();return;
+ }
+ if(['+','-','*','/','%'].includes(key)){
+  if(key==='%'){calcValue=String(Number(calcValue)/100);updateCalc();return}
+  calcPrevious=calcValue;calcOperator=key;calcNew=true;return;
+ }
+ if(key==='.'&&calcValue.includes('.')&&!calcNew)return;
+ if(calcNew){calcValue=key==='.'?'0.':key;calcNew=false}
+ else calcValue=calcValue==='0'&&key!=='.'?key:calcValue+key;
+ updateCalc();
+}
+document.querySelectorAll('[data-calc]').forEach(b=>b.addEventListener('click',()=>calcPress(b.dataset.calc)));
+document.addEventListener('keydown',e=>{
+ if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName))return;
+ if(/^[0-9.]$/.test(e.key))calcPress(e.key);
+ else if(['+','-','*','/'].includes(e.key))calcPress(e.key);
+ else if(e.key==='Enter')calcPress('=');
+ else if(e.key==='Backspace')calcPress('delete');
+ else if(e.key==='Escape')calcPress('clear');
+});
+renderStats();renderRecent();renderReports();renderDashboard();
+</script>
+</body>
+</html>
